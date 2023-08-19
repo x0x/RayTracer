@@ -1,16 +1,25 @@
 #include "../include/color.h"
-#include "../include/ray.h"
-#include "../include/vec3.h"
-#include "../include/sphere.h"
 #include "../include/hittable.h"
+#include "../include/hittable_list.h"
+#include "../include/ray.h"
+#include "../include/sphere.h"
+#include "../include/vec3.h"
 
 #include <iostream>
 
-Color Ray_Color(const Ray &r) {
+using std::make_shared;
+using std::shared_ptr;
+
+Color Ray_Color(const Ray &r, const HittableList &world) {
+
+  HitRecord rec;
+  if (world.hit(r, 0, 1e8, rec)) {
+    return (rec.normal_ + Color(0,0,0));
+  };
 
   Vec3 unitVector = unit_vector(r.direction());
   auto temp = 0.5 * (unitVector.y() + 1);
-  return (1 - temp) * Color(1, 0, 0) + temp * Color(0, 0, 1);
+  return (1 - temp) * Color(1, 1, 1) + temp * Color(0.5, 0.7, 1);
 }
 
 int main() {
@@ -18,6 +27,12 @@ int main() {
   const double aspect_ratio = 16.0 / 9.0;
   const int image_width = 1020;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
+
+  // add objects in world
+
+  HittableList world;
+  world.add(make_shared<Sphere>(Point(0, 0, -1), 0.5));
+  world.add(make_shared<Sphere>(Point(0, 100.5, -1), 100));
 
   auto focal_length = 1.0;
   auto viewport_height = 1.5;
@@ -49,7 +64,7 @@ int main() {
       auto ray_direction_vec = pixel_center_point - camera_position;
 
       Ray r(camera_position, ray_direction_vec);
-      Color pixel_Color = Ray_Color(r);
+      Color pixel_Color = Ray_Color(r, world);
       writeColor(std::cout, pixel_Color);
     }
   }
