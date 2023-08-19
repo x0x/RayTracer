@@ -1,13 +1,16 @@
 #include "../include/color.h"
 #include "../include/ray.h"
 #include "../include/vec3.h"
+#include "../include/sphere.h"
+#include "../include/hittable.h"
+
 #include <iostream>
 
-color ray_color(const ray &r) {
+Color Ray_Color(const Ray &r) {
 
-  vec3 unitVector = unit_vector(r.direction());
+  Vec3 unitVector = unit_vector(r.direction());
   auto temp = 0.5 * (unitVector.y() + 1);
-  return (1 - temp) * color(1, 0, 0) + temp * color(0, 0, 1);
+  return (1 - temp) * Color(1, 0, 0) + temp * Color(0, 0, 1);
 }
 
 int main() {
@@ -20,17 +23,17 @@ int main() {
   auto viewport_height = 1.5;
   auto viewport_width =
       viewport_height * (static_cast<double>(image_width / image_height));
-  auto camera_position = vec3(0, 0, 0);
+  auto camera_position = Vec3(0, 0, 0);
 
-  auto viewport_x_vec = vec3(viewport_width, 0, 0);
-  auto viewport_y_vec = vec3(0, -viewport_height, 0);
+  auto viewport_x_vec = Vec3(viewport_width, 0, 0);
+  auto viewport_y_vec = Vec3(0, -viewport_height, 0);
 
   auto delta_x_vec = viewport_x_vec / image_width;
   auto delta_y_vec = viewport_y_vec / image_height;
 
   auto viewport_upper_left_point = camera_position - viewport_x_vec / 2.0 -
                                    viewport_y_vec / 2.0 -
-                                   vec3(0, 0, focal_length);
+                                   Vec3(0, 0, focal_length);
 
   auto pixel_00_point =
       viewport_upper_left_point + (delta_x_vec / 2.0) + (delta_y_vec / 2.0);
@@ -45,9 +48,9 @@ int main() {
           pixel_00_point + i * delta_x_vec + j * delta_y_vec;
       auto ray_direction_vec = pixel_center_point - camera_position;
 
-      ray r(camera_position, ray_direction_vec);
-      color pixel_color = ray_color(r);
-      writeColor(std::cout, pixel_color);
+      Ray r(camera_position, ray_direction_vec);
+      Color pixel_Color = Ray_Color(r);
+      writeColor(std::cout, pixel_Color);
     }
   }
   std::cerr << "\nDone.\n";
