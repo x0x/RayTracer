@@ -1,13 +1,25 @@
 #include "../include/color.h"
+#include "../include/hittable.h"
+#include "../include/hittable_list.h"
 #include "../include/ray.h"
+#include "../include/sphere.h"
 #include "../include/vec3.h"
+
 #include <iostream>
 
-color ray_color(const ray &r) {
+using std::make_shared;
+using std::shared_ptr;
 
-  vec3 unitVector = unit_vector(r.direction());
+Color Ray_Color(const Ray &r, const HittableList &world) {
+
+  HitRecord rec;
+  if (world.hit(r, 0, 1e8, rec)) {
+    return (rec.normal_ + Color(0,0,0));
+  };
+
+  Vec3 unitVector = unit_vector(r.direction());
   auto temp = 0.5 * (unitVector.y() + 1);
-  return (1 - temp) * color(1, 0, 0) + temp * color(0, 0, 1);
+  return (1 - temp) * Color(1, 1, 1) + temp * Color(0.5, 0.7, 1);
 }
 
 int main() {
@@ -16,21 +28,27 @@ int main() {
   const int image_width = 1020;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
 
+  // add objects in world
+
+  HittableList world;
+  world.add(make_shared<Sphere>(Point(0, 0, -1), 0.5));
+  world.add(make_shared<Sphere>(Point(0, 100.5, -1), 100));
+
   auto focal_length = 1.0;
   auto viewport_height = 1.5;
   auto viewport_width =
       viewport_height * (static_cast<double>(image_width / image_height));
-  auto camera_position = vec3(0, 0, 0);
+  auto camera_position = Vec3(0, 0, 0);
 
-  auto viewport_x_vec = vec3(viewport_width, 0, 0);
-  auto viewport_y_vec = vec3(0, -viewport_height, 0);
+  auto viewport_x_vec = Vec3(viewport_width, 0, 0);
+  auto viewport_y_vec = Vec3(0, -viewport_height, 0);
 
   auto delta_x_vec = viewport_x_vec / image_width;
   auto delta_y_vec = viewport_y_vec / image_height;
 
   auto viewport_upper_left_point = camera_position - viewport_x_vec / 2.0 -
                                    viewport_y_vec / 2.0 -
-                                   vec3(0, 0, focal_length);
+                                   Vec3(0, 0, focal_length);
 
   auto pixel_00_point =
       viewport_upper_left_point + (delta_x_vec / 2.0) + (delta_y_vec / 2.0);
@@ -45,9 +63,9 @@ int main() {
           pixel_00_point + i * delta_x_vec + j * delta_y_vec;
       auto ray_direction_vec = pixel_center_point - camera_position;
 
-      ray r(camera_position, ray_direction_vec);
-      color pixel_color = ray_color(r);
-      writeColor(std::cout, pixel_color);
+      Ray r(camera_position, ray_direction_vec);
+      Color pixel_Color = Ray_Color(r, world);
+      writeColor(std::cout, pixel_Color);
     }
   }
   std::cerr << "\nDone.\n";
