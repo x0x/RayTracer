@@ -10,7 +10,7 @@ private:
 public:
   Sphere(Point centre, double radius) : centre_(centre), radius_(radius){};
 
-  bool hit(const Ray &r, double t_min, double t_max,
+  bool hit(const Ray &r, Interval param_interval,
            HitRecord &record) const override {
 
     Vec3 centre_to_origin_vec = r.origin() - centre_;
@@ -27,12 +27,13 @@ public:
 
     auto root = (-1 * b - sqrt(discriminant)) / (2.0 * a);
 
-    if (root <= t_min || root >= t_max) {
+    if (!param_interval.surrounds(root)) {
       root = (-1 * b + sqrt(discriminant)) / (2.0 * a);
-      if (root < t_min || root > t_max) {
+      if (!param_interval.surrounds(root)) {
         return false;
       }
     }
+    
 
     record.param_ = root;
     record.point_ = r.pointAtParam(record.param_);

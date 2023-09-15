@@ -18,14 +18,14 @@ public:
 
   void add(std::shared_ptr<Hittable> object) { objects.emplace_back(object); }
 
-  bool hit(const Ray &r, double tMin, double tMax,
+  bool hit(const Ray &r, Interval param_interval,
            HitRecord &rec) const override {
     HitRecord closest_rec;
     bool did_hit = false;
-    auto closest_param = tMax;
+    auto closest_param = param_interval.max_;
 
     for (const auto &object : objects) {
-      if (object->hit(r, tMin, closest_param, closest_rec)) {
+      if (object->hit(r, Interval(param_interval.min_, closest_param) , closest_rec)) {
         did_hit = true;
         rec = closest_rec;
         closest_param = closest_rec.param_;
