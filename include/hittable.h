@@ -10,8 +10,9 @@ public:
   double param_;
   bool front_face_;
 
-  void setFrontFace(const Ray &r, const Vec3 &normal) {
-    front_face_ = dot(r.direction(), normal) < 0.0;
+  void setFrontFace(const Ray &r, const Vec3& outward_normal) {
+    front_face_ = dot(r.direction(), outward_normal) < 0.0;
+    normal_ = front_face_ ? outward_normal : -outward_normal;
   }
 };
 

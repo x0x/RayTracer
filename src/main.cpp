@@ -6,6 +6,7 @@
 #include "../include/sphere.h"
 #include "../include/vec3.h"
 #include "../include/camera.h"
+
 #include <iostream>
 
 using std::make_shared;
@@ -20,8 +21,10 @@ int main() {
 
   Camera camera;
 
-  camera.aspect_ratio = 16.0/9.0;
-  camera.image_width = 1020;
+  camera.aspect_ratio_ = 16.0/9.0;
+  camera.image_width_ = 1020;
+  camera.samples_per_pixel_ = 10;
+  camera.max_depth_ = 10;
 
-  camera.render(world);
+  camera.Render(world);
 }

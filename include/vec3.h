@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utility.h"
 #include <cmath>
 #include <iostream>
 
@@ -17,6 +18,15 @@ public:
   Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
   double operator[](int idx) const { return e[idx]; }
 
+  static Vec3 Random() {
+    return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+  }
+
+  static Vec3 Random(double min, double max) {
+    return Vec3(RandomDouble(min, max), RandomDouble(min, max),
+                RandomDouble(min, max));
+  }
+
   Vec3 &operator+=(const Vec3 &v) {
     e[0] += v.e[0];
     e[1] += v.e[1];
@@ -32,17 +42,17 @@ public:
   }
 
   Vec3 &operator/=(const double t) {
-    e[0] /= t;
-    e[1] /= t;
-    e[2] /= t;
+    e[0] /= t * 1.0;
+    e[1] /= t * 1.0;
+    e[2] /= t * 1.0;
     return *this;
   }
 
-  double lengthSquared() const {
+  double LengthSquared() const {
     return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
   }
 
-  double length() const { return sqrt(lengthSquared()); }
+  double Length() const { return sqrt(LengthSquared()); }
 
 public:
   double e[3];
@@ -85,4 +95,24 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v) {
               u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 }
 
-inline Vec3 unit_vector(Vec3 v) { return v / v.length(); }
+inline Vec3 UnitVector(Vec3 v) { return v / v.Length(); }
+
+inline Vec3 RandomInUnitSphere() {
+  while (true) {
+    auto p = Vec3::Random(-1, 1);
+    if (p.LengthSquared() < 1)
+      return p;
+  }
+}
+
+inline Vec3 RandomUnitVector() {
+    return UnitVector(RandomInUnitSphere());
+}
+
+inline Vec3 RandomOnHemisphere(const Vec3& normal) {
+    Vec3 on_unit_sphere = RandomUnitVector();
+    if (dot(on_unit_sphere, normal) > 0.0) 
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
+}

@@ -27,9 +27,9 @@ public:
 
     auto root = (-1 * b - sqrt(discriminant)) / (2.0 * a);
 
-    if (!param_interval.surrounds(root)) {
+    if (!param_interval.Surrounds(root)) {
       root = (-1 * b + sqrt(discriminant)) / (2.0 * a);
-      if (!param_interval.surrounds(root)) {
+      if (!param_interval.Surrounds(root)) {
         return false;
       }
     }
@@ -37,7 +37,7 @@ public:
 
     record.param_ = root;
     record.point_ = r.pointAtParam(record.param_);
-    record.normal_ = unit_vector((record.point_ - centre_) / radius_);
+    record.normal_ = UnitVector((record.point_ - centre_) / radius_);
     record.setFrontFace(r , record.normal_);
     return true;
   }
