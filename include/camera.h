@@ -92,9 +92,9 @@ private:
     }
 
     HitRecord rec;
-    if (world.hit(r, Interval(0.00001, infinity), rec)) {
-      Vec3 direction = RandomOnHemisphere(rec.normal_);
-      return 0.5 * RayColor(Ray(rec.point_, direction), world, depth - 1);
+    if (world.hit(r, Interval(0.500, infinity), rec)) {
+      Vec3 direction = rec.normal_ + RandomUnitVector();
+      return 0.2 * RayColor(Ray(rec.point_, direction), world, depth - 1);
     };
 
     Vec3 unitVector = UnitVector(r.direction());

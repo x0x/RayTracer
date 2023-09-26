@@ -16,15 +16,13 @@ int main() {
 
   // add objects in world
   HittableList world;
-  world.add(make_shared<Sphere>(Point(0, 0, -1), 0.5));
+  world.add(make_shared<Sphere>(Point(0, 0, -1), 0.2));
   world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100));
 
   Camera camera;
-
-  camera.aspect_ratio_ = 16.0/9.0;
-  camera.image_width_ = 1020;
+  camera.aspect_ratio_ = 1.0;
+  camera.image_width_ = 500;
   camera.samples_per_pixel_ = 10;
-  camera.max_depth_ = 10;
-
+  camera.max_depth_ = 5;
   camera.Render(world);
 }
