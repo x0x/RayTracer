@@ -1,14 +1,16 @@
-#include "hittable.h"
-#include "ray.h"
-#include "vec3.h"
+#pragma once
 
-class Sphere : public Hittable {
+#include "hittable.h"
+
+class Sphere : public Hittable { 
 private:
   Point centre_;
   double radius_;
+  std::shared_ptr<Material> material_;
 
 public:
-  Sphere(Point centre, double radius) : centre_(centre), radius_(radius){};
+  Sphere(Point centre, double radius, std::shared_ptr<Material> material) : centre_(centre), radius_(radius),
+   material_(material){};
 
   bool hit(const Ray &r, Interval param_interval,
            HitRecord &record) const override {
@@ -39,6 +41,7 @@ public:
     record.point_ = r.pointAtParam(record.param_);
     record.normal_ = UnitVector((record.point_ - centre_) / radius_);
     record.setFrontFace(r , record.normal_);
+    record.material_ = material_; 
     return true;
   }
 };

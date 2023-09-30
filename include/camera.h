@@ -1,8 +1,8 @@
-#pragma once
 
 #include "color.h"
 #include "constants.h"
 #include "hittable.h"
+#include "material.h"
 #include "utility.h"
 #include "vec3.h"
 
@@ -34,7 +34,7 @@ public:
 
         for (int sample = 0; sample < samples_per_pixel_; sample++) {
           Ray ray = GetRay(i, j);
-          pixel_color += RayColor(ray, world,max_depth_);
+          pixel_color += RayColor(ray, world, max_depth_);
         }
         WriteColor(std::cout, pixel_color, samples_per_pixel_);
       }
@@ -87,15 +87,22 @@ private:
 
   Color RayColor(const Ray &r, const Hittable &world, int depth) {
 
+    HitRecord hit_record;
     if (depth < 0) {
-      return Color(0, 0, 0);
+      // std::cerr<<"Yeah\n ";
+      return Color(0,0,0);
     }
 
-    HitRecord rec;
-    if (world.hit(r, Interval(0.500, infinity), rec)) {
-      Vec3 direction = rec.normal_ + RandomUnitVector();
-      return 0.2 * RayColor(Ray(rec.point_, direction), world, depth - 1);
-    };
+    if (world.hit(r, Interval(0.001, infinity), hit_record)) {
+      Color attenuation;
+      Ray scattered;
+      if (hit_record.material_->Scatter(r, hit_record, attenuation,
+                                        scattered)) {
+        return attenuation * RayColor(scattered, world, depth - 1);
+      } else {
+        return Color(0, 0, 0);
+      }
+    }
 
     Vec3 unitVector = UnitVector(r.direction());
     auto temp = 0.5 * (unitVector.y() + 1.0);

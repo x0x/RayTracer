@@ -1,7 +1,8 @@
 #pragma once
-#include "interval.h"
 #include "ray.h"
-#include "vec3.h"
+#include <memory>
+
+class Material;
 
 class HitRecord {
 public:
@@ -9,6 +10,7 @@ public:
   Vec3 normal_;
   double param_;
   bool front_face_;
+  std::shared_ptr<Material> material_;
 
   void setFrontFace(const Ray &r, const Vec3& outward_normal) {
     front_face_ = dot(r.direction(), outward_normal) < 0.0;

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "hittable.h"
-#include <memory>
-#include <vector>
 
 class HittableList : public Hittable {
 public:
   std::vector<std::shared_ptr<Hittable>> objects;
 
+public:
   HittableList() {}
 
   HittableList(std::shared_ptr<Hittable> object) {
