@@ -123,6 +123,13 @@ inline Vec3 RandomOnHemisphere(const Vec3& normal) {
 }
 
 
-Vec3 reflect(const Vec3& v, const Vec3& n) {
+Vec3 Reflect(const Vec3& v, const Vec3& n) {
     return v - 2*dot(v,n)*n;
+}
+
+Vec3 Refract(const Vec3& ray , const Vec3& normal , const double& refractiveIndexRatio) {
+  auto cosine = fmin(dot(-1*ray,normal),1.0);
+  Vec3 rayPerpendicular = refractiveIndexRatio * (ray + cosine * normal);
+  Vec3 rayParallel = -1.0 * sqrt(fabs(1 - rayPerpendicular.LengthSquared())) * normal;
+  return rayParallel + rayPerpendicular; 
 }

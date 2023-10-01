@@ -48,7 +48,7 @@ private:
     camera_position_ = Vec3(0, 0, 0);
 
     auto focal_Length = 1.0;
-    auto viewport_height = 2;
+    auto viewport_height = 2.0*focal_Length;
     auto viewport_width =
         viewport_height * (static_cast<double>(image_width_ / image_height_));
 
