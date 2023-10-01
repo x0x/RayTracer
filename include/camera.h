@@ -12,6 +12,10 @@ public:
   int image_width_;
   int samples_per_pixel_;
   int max_depth_;
+  double fov_;
+  Point lookFrom_;
+  Point lookAt_;
+  Vec3 verticalUp_ = Vec3(0,1,0);
 
 private:
   int image_height_;
@@ -19,6 +23,7 @@ private:
   Vec3 delta_x_vec_;
   Vec3 delta_y_vec_;
   Vec3 pixel_00_point_;
+  Vec3 new_x , new_y , new_z;
 
 public:
   void Render(const Hittable &world) {
@@ -45,22 +50,34 @@ public:
 private:
   void Initialise() {
     image_height_ = static_cast<int>(image_width_ / aspect_ratio_);
-    camera_position_ = Vec3(0, 0, 0);
+    camera_position_ = lookFrom_;
 
-    auto focal_Length = 1.0;
-    auto viewport_height = 2.0*focal_Length;
+    auto focal_length = (lookFrom_ -lookAt_).Length();
+
+    auto viewport_height = 2.0*focal_length * tan(DegreeToRadian(fov_/2.0));
     auto viewport_width =
         viewport_height * (static_cast<double>(image_width_ / image_height_));
 
-    auto viewport_x_vec = Vec3(viewport_width, 0, 0);
-    auto viewport_y_vec = Vec3(0, viewport_height, 0);
+
+    // calculate orthogonal basis for new camera orientation
+
+    new_z = UnitVector(lookFrom_-lookAt_);
+    new_x = UnitVector(cross(verticalUp_,new_z));
+    new_y = UnitVector(cross(new_z,new_x));
+
+
+    auto viewport_x_vec = Vec3(viewport_width, 0, 0) * new_x;
+    auto viewport_y_vec = Vec3(0, viewport_height, 0) * new_y;
+
+
+
 
     delta_x_vec_ = viewport_x_vec / image_width_;
     delta_y_vec_ = viewport_y_vec / image_height_;
 
     auto viewport_upper_left_point = camera_position_ - viewport_x_vec / 2.0 -
                                      viewport_y_vec / 2.0 -
-                                     Vec3(0, 0, focal_Length);
+                                     focal_length*new_z;
 
     pixel_00_point_ =
         viewport_upper_left_point + (delta_x_vec_ / 2.0) + (delta_y_vec_ / 2.0);
